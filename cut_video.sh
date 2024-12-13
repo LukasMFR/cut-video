@@ -31,16 +31,16 @@ for ((i=0; i<${#TIMESTAMPS[@]}; i+=2)); do
     END=${TIMESTAMPS[i+1]}
     SEGMENT_FILE="$TEMP_DIR/segment_$((i/2)).mp4"
     if [ "$KEEP_AUDIO" = "true" ]; then
-        ffmpeg -i "$INPUT_VIDEO" -ss "$START" -to "$END" -c:v libx264 -preset fast -c:a aac "$SEGMENT_FILE" -y
+        ffmpeg -i "$INPUT_VIDEO" -ss "$START" -to "$END" -c:v h264_videotoolbox -b:v 5000k -c:a aac "$SEGMENT_FILE" -y
     else
-        ffmpeg -i "$INPUT_VIDEO" -ss "$START" -to "$END" -c:v libx264 -preset fast -an "$SEGMENT_FILE" -y
+        ffmpeg -i "$INPUT_VIDEO" -ss "$START" -to "$END" -c:v h264_videotoolbox -b:v 5000k -an "$SEGMENT_FILE" -y
     fi
     echo "file '$SEGMENT_FILE'" >> "$SEGMENT_LIST"
 done
 
 # Assemble les segments
 echo "Assemblage des segments..."
-ffmpeg -f concat -safe 0 -i "$SEGMENT_LIST" -c:v libx264 -preset fast -c:a aac "$OUTPUT_VIDEO" -y
+ffmpeg -f concat -safe 0 -i "$SEGMENT_LIST" -c:v h264_videotoolbox -b:v 5000k -c:a aac "$OUTPUT_VIDEO" -y
 
 # Nettoie les fichiers temporaires
 rm -r "$TEMP_DIR"
